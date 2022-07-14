@@ -1,0 +1,11 @@
+query Posts($username: String!) {
+  user(username: $username) {
+    name
+    publication {
+      posts {
+        title
+        contentMarkdown
+      }
+    }
+  }
+}
