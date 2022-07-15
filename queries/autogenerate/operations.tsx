@@ -9,7 +9,6 @@ export type PostsQuery = {
   user?: {
     __typename?: 'User'
     name?: string | null
-    photo?: string | null
     publication?: {
       __typename?: 'Publication'
       posts?: Array<{

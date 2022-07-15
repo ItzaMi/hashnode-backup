@@ -8,7 +8,6 @@ export const PostsDocument = gql`
   query Posts($username: String!) {
     user(username: $username) {
       name
-      photo
       publication {
         posts {
           title
