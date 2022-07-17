@@ -13,6 +13,7 @@ export type PostsQuery = {
       __typename?: 'Publication'
       posts?: Array<{
         __typename?: 'Post'
+        cuid?: string | null
         title?: string | null
         contentMarkdown?: string | null
       } | null> | null

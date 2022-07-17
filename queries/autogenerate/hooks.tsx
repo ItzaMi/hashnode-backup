@@ -10,6 +10,7 @@ export const PostsDocument = gql`
       name
       publication {
         posts {
+          cuid
           title
           contentMarkdown
         }

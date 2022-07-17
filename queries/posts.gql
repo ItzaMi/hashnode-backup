@@ -3,6 +3,7 @@ query Posts($username: String!) {
     name
     publication {
       posts {
+        cuid
         title
         contentMarkdown
       }
