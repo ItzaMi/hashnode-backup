@@ -5,7 +5,7 @@ import { usePostsLazyQuery } from '../queries/autogenerate/hooks'
 
 import ClientOnly from '../services/clientOnly'
 
-import Button from '../components/Button'
+import Button, { ButtonType } from '../components/Button'
 import Banner, { BannerType } from '../components/Banner'
 import Divider from '../components/Divider'
 import Input from '../components/Input'
@@ -86,6 +86,7 @@ const Home: FC = () => {
                 onClick={() =>
                   getUserPosts({ variables: { username: username } })
                 }
+                type={ButtonType.Primary}
               />
             </div>
           </section>
@@ -111,7 +112,14 @@ const Home: FC = () => {
                 {data.user.publication?.posts &&
                 data.user.publication.posts?.length > 0 ? (
                   data.user.publication?.posts?.map((post, key) => (
-                    <Post cuid={post!.cuid!} key={key} title={post!.title!} />
+                    <Post
+                      cuid={post!.cuid!}
+                      isLastPost={
+                        key === data.user!.publication!.posts!.length - 1
+                      }
+                      key={key}
+                      title={post!.title!}
+                    />
                   ))
                 ) : (
                   <Banner
@@ -165,8 +173,20 @@ const Home: FC = () => {
                   githubKey === '' ||
                   githubRepo === ''
                 }
-                label="Back up posts"
+                label="Back up last 5 posts"
                 onClick={() => triggerPostsBackup()}
+                type={ButtonType.Secondary}
+              />
+              <Button
+                isDisabled={
+                  !data ||
+                  githubUsername === '' ||
+                  githubKey === '' ||
+                  githubRepo === ''
+                }
+                label="Back up all posts"
+                onClick={() => triggerPostsBackup()}
+                type={ButtonType.Primary}
               />
             </div>
           </section>
