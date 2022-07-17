@@ -1,13 +1,21 @@
 import { FC, useState } from 'react'
 import { Octokit } from 'octokit'
 
-import { usePostsLazyQuery, usePostsQuery } from '../queries/autogenerate/hooks'
+import { usePostsLazyQuery } from '../queries/autogenerate/hooks'
 
 import ClientOnly from '../services/clientOnly'
 
+import Button from '../components/Button'
+import Banner, { BannerType } from '../components/Banner'
+import Divider from '../components/Divider'
+import Input from '../components/Input'
+import Navbar from '../components/Navbar'
+import StepHeading from '../components/StepHeading'
+import Post from '../components/Post'
+
 const Home: FC = () => {
   const [username, setUsername] = useState('')
-  const [githubOwner, setGithubOwner] = useState('')
+  const [githubUsername, setGithubUsername] = useState('')
   const [githubKey, setGithubKey] = useState('')
   const [githubRepo, setGithubRepo] = useState('')
 
@@ -29,7 +37,7 @@ const Home: FC = () => {
 
       try {
         await octokit.request(
-          `PUT /repos/${githubOwner}/${githubRepo}/contents/${path}`,
+          `PUT /repos/${githubUsername}/${githubRepo}/contents/${path}`,
           {
             owner: 'OWNER',
             repo: 'REPO',
@@ -46,70 +54,124 @@ const Home: FC = () => {
 
   return (
     <ClientOnly>
-      <h1>Hashnode Backup</h1>
-      <div>
-        <h3>
-          Search for your Hashnode username, find your latest posts and back
-          them up to a GitHub repository
-        </h3>
-        <input
-          placeholder="Insert your Hashnode username"
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <button
-          onClick={() => getUserPosts({ variables: { username: username } })}
-        >
-          Get last 5 posts
-        </button>
-      </div>
+      <Navbar />
+      <main className="mx-auto my-8 max-w-7xl">
+        <div className="p-6 bg-white border-[1px] rounded-md">
+          <div className="mb-4">
+            <h1 className="mb-2 text-2xl text-slate-800 font-semibold">
+              Hashnode Backup
+            </h1>
+            <p>
+              Search for your Hashnode username, find your latest posts and back
+              them up to a GitHub repository
+            </p>
+          </div>
 
-      {loading && <p>Loading posts</p>}
+          <Divider />
 
-      {!loading && data?.user && (
-        <div>
-          {data.user.publication?.posts?.map((post) => (
-            <p>{post?.title}</p>
-          ))}
-        </div>
-      )}
+          <section>
+            <StepHeading
+              description="Search for your Hashnode username"
+              title="Step 1"
+            />
+            <div className="flex items-end gap-x-2">
+              <Input
+                onInputChange={(e) => setUsername(e.target.value)}
+                placeholder="Insert your Hashnode username"
+                value={username}
+              />
+              <Button
+                isDisabled={username === ''}
+                label=" Get last 5 posts"
+                onClick={() =>
+                  getUserPosts({ variables: { username: username } })
+                }
+              />
+            </div>
+          </section>
 
-      {!loading && error && (
-        <p>Oh, no! It seems there was an error! Please try again.</p>
-      )}
+          <Divider />
 
-      <div>
-        <h3>
-          Now it's time to back up your posts. Please fill in the inputs with
-          the required info
-        </h3>
-        <div>
-          <label htmlFor="github-username">GitHub Username</label>
-          <input
-            placeholder="Insert your Github username"
-            name="github-username"
-            onChange={(e) => setGithubOwner(e.target.value)}
-          />
+          <section>
+            <StepHeading
+              description="Look through your latest 5 posts"
+              title="Step 2"
+            />
+            {!loading && !data && !error && (
+              <Banner
+                text="Please search for your username to get your latest posts"
+                type={BannerType.Info}
+              />
+            )}
+
+            {loading && <Banner text="Loading posts" type={BannerType.Info} />}
+
+            {!loading && data?.user && (
+              <div>
+                {data.user.publication?.posts &&
+                data.user.publication.posts?.length > 0 ? (
+                  data.user.publication?.posts?.map((post, key) => (
+                    <Post cuid={post!.cuid!} key={key} title={post!.title!} />
+                  ))
+                ) : (
+                  <Banner
+                    text="It seems you haven't uploaded any posts so far!"
+                    type={BannerType.Info}
+                  />
+                )}
+              </div>
+            )}
+
+            {!loading && error && (
+              <Banner
+                text="Oh, no! It seems there was an error! Please try again."
+                type={BannerType.Error}
+              />
+            )}
+          </section>
+
+          <Divider />
+
+          <section>
+            <StepHeading
+              description="Now it's time to back up your posts. Please fill in the
+              inputs with the required info"
+              title="Step 3"
+            />
+
+            <div className="flex items-end gap-x-2">
+              <Input
+                label="Github username"
+                onInputChange={(e) => setGithubUsername(e.target.value)}
+                placeholder={'Insert your Github username'}
+                value={githubUsername}
+              />
+              <Input
+                label="Github key"
+                onInputChange={(e) => setGithubKey(e.target.value)}
+                placeholder="Insert your Github key"
+                value={githubKey}
+              />
+              <Input
+                label="Github repo"
+                onInputChange={(e) => setGithubRepo(e.target.value)}
+                placeholder="Insert your Github repo"
+                value={githubRepo}
+              />
+              <Button
+                isDisabled={
+                  !data ||
+                  githubUsername === '' ||
+                  githubKey === '' ||
+                  githubRepo === ''
+                }
+                label="Back up posts"
+                onClick={() => triggerPostsBackup()}
+              />
+            </div>
+          </section>
         </div>
-        <div>
-          <label htmlFor="github-key">GitHub Key</label>
-          <input
-            placeholder="Insert your Github key"
-            name="github-key"
-            onChange={(e) => setGithubKey(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="github-repo">GitHub Repo</label>
-          <input
-            placeholder="Insert your Github repo"
-            name="github-repo"
-            onChange={(e) => setGithubRepo(e.target.value)}
-          />
-        </div>
-        <button disabled={!data} onClick={() => triggerPostsBackup()}>
-          Back up posts
-        </button>
-      </div>
+      </main>
     </ClientOnly>
   )
 }
