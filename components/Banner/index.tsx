@@ -1,8 +1,9 @@
 import { FC } from 'react'
 
 export enum BannerType {
-  Info = 'info',
   Error = 'error',
+  Info = 'info',
+  Success = 'success',
 }
 
 interface Props {
@@ -13,11 +14,13 @@ interface Props {
 const Banner: FC<Props> = ({ text, type }) => {
   const bannerTypeStyling = (type: BannerType) => {
     switch (type) {
+      case BannerType.Error:
+        return 'bg-red-100 border-red-400 text-red-800'
       case BannerType.Info:
       default:
         return 'bg-blue-100 border-blue-400 text-blue-800'
-      case BannerType.Error:
-        return 'bg-red-100 border-red-400 text-red-800'
+      case BannerType.Success:
+        return 'bg-green-100 border-green-400 text-green-800'
     }
   }
 
