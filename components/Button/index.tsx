@@ -25,7 +25,7 @@ const Button: FC<Props> = ({ isDisabled, label, onClick, type }) => {
 
   return (
     <button
-      className={`ml-2 px-4 h-10 rounded-md ${buttonStyle(
+      className={`px-4 h-10 rounded-md ${buttonStyle(
         type
       )} disabled:opacity-50 disabled:cursor-not-allowed`}
       disabled={isDisabled}

@@ -23,9 +23,9 @@ const Banner: FC<Props> = ({ text, type }) => {
 
   return (
     <div
-      className={`px-4 h-10 border-2 rounded-md flex items-center text-sm ${bannerTypeStyling(
+      className={`px-4 py-4 border-2 rounded-md flex items-center text-sm ${bannerTypeStyling(
         type
-      )}`}
+      )} sm:py-0 sm:h-10 `}
     >
       {text}
     </div>

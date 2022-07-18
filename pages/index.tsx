@@ -83,7 +83,7 @@ const Home: FC = () => {
               description="Search for your Hashnode username"
               title="Step 1"
             />
-            <div className="flex items-end gap-x-2">
+            <div className="flex flex-col gap-y-4 sm:flex-row sm:items-end sm:gap-x-2">
               <Input
                 onInputChange={(e) => setUsername(e.target.value)}
                 placeholder="Insert your Hashnode username"
@@ -156,49 +156,53 @@ const Home: FC = () => {
               title="Step 3"
             />
 
-            <div className="flex items-end gap-x-2">
-              <Input
-                label="Github username"
-                onInputChange={(e) => setGithubUsername(e.target.value)}
-                placeholder={'Insert your Github username'}
-                value={githubUsername}
-              />
-              <Input
-                label="Github key"
-                onInputChange={(e) => setGithubKey(e.target.value)}
-                placeholder="Insert your Github key"
-                value={githubKey}
-              />
-              <Input
-                label="Github repo"
-                onInputChange={(e) => setGithubRepo(e.target.value)}
-                placeholder="Insert your Github repo"
-                value={githubRepo}
-              />
-              <Button
-                isDisabled={
-                  !data ||
-                  githubUsername === '' ||
-                  githubKey === '' ||
-                  githubRepo === ''
-                }
-                label="Back up last 5 posts"
-                onClick={() => triggerPostsBackup(getLast5Posts())}
-                type={ButtonType.Secondary}
-              />
-              <Button
-                isDisabled={
-                  !data ||
-                  githubUsername === '' ||
-                  githubKey === '' ||
-                  githubRepo === ''
-                }
-                label="Back up all posts"
-                onClick={() =>
-                  triggerPostsBackup(data?.user?.publication?.posts)
-                }
-                type={ButtonType.Primary}
-              />
+            <div className="flex flex-col gap-y-4 desktop:flex-row desktop:items-end desktop:gap-x-2">
+              <div className="flex flex-col gap-y-4 md:flex-row md:items-end md:gap-x-2">
+                <Input
+                  label="Github username"
+                  onInputChange={(e) => setGithubUsername(e.target.value)}
+                  placeholder={'Insert your Github username'}
+                  value={githubUsername}
+                />
+                <Input
+                  label="Github key"
+                  onInputChange={(e) => setGithubKey(e.target.value)}
+                  placeholder="Insert your Github key"
+                  value={githubKey}
+                />
+                <Input
+                  label="Github repo"
+                  onInputChange={(e) => setGithubRepo(e.target.value)}
+                  placeholder="Insert your Github repo"
+                  value={githubRepo}
+                />
+              </div>
+              <div className="flex flex-col gap-y-4 sm:flex-row sm:items-end sm:gap-x-2">
+                <Button
+                  isDisabled={
+                    !data ||
+                    githubUsername === '' ||
+                    githubKey === '' ||
+                    githubRepo === ''
+                  }
+                  label="Back up last 5 posts"
+                  onClick={() => triggerPostsBackup(getLast5Posts())}
+                  type={ButtonType.Secondary}
+                />
+                <Button
+                  isDisabled={
+                    !data ||
+                    githubUsername === '' ||
+                    githubKey === '' ||
+                    githubRepo === ''
+                  }
+                  label="Back up all posts"
+                  onClick={() =>
+                    triggerPostsBackup(data?.user?.publication?.posts)
+                  }
+                  type={ButtonType.Primary}
+                />
+              </div>
             </div>
           </section>
 
