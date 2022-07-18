@@ -64,7 +64,7 @@ const Home: FC = () => {
   return (
     <ClientOnly>
       <Navbar />
-      <main className="mx-auto my-8 max-w-7xl">
+      <main className="px-4 my-8 xl:px-0 xl:max-w-7xl xl:mx-auto">
         <div className="p-6 bg-white border-[1px] rounded-md">
           <div className="mb-4">
             <h1 className="mb-2 text-2xl text-slate-800 font-semibold">
