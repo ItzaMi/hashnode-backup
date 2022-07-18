@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, Key, useState } from 'react'
 import { Octokit } from 'octokit'
 
 import { usePostsLazyQuery } from '../queries/autogenerate/hooks'
@@ -10,21 +10,29 @@ import Banner, { BannerType } from '../components/Banner'
 import Divider from '../components/Divider'
 import Input from '../components/Input'
 import Navbar from '../components/Navbar'
-import StepHeading from '../components/StepHeading'
 import Post from '../components/Post'
+import StepHeading from '../components/StepHeading'
 
 const Home: FC = () => {
   const [username, setUsername] = useState('')
   const [githubUsername, setGithubUsername] = useState('')
   const [githubKey, setGithubKey] = useState('')
   const [githubRepo, setGithubRepo] = useState('')
+  const [errors, setErrors] = useState<string[]>([])
 
   const [getUserPosts, { data, loading, error }] = usePostsLazyQuery()
 
-  const triggerPostsBackup = () => {
-    const postsData = data?.user?.publication?.posts!.slice(0, 5)
+  const getLast5Posts = () => {
+    return [...data!.user!.publication!.posts!]
+      .sort(
+        (postA, postB) => Number(postA?.dateAdded) - Number(postB?.dateAdded)
+      )
+      ?.slice(0, 5)
+  }
 
-    postsData?.forEach(async (post) => {
+  const triggerPostsBackup = (postsData: any) => {
+    setErrors([])
+    postsData?.forEach(async (post: any) => {
       const octokit = new Octokit({
         auth: githubKey,
       })
@@ -47,7 +55,8 @@ const Home: FC = () => {
           }
         )
       } catch (error) {
-        console.log(error)
+        const errorString = `"${post.title}" failed to upload!`
+        setErrors((previousState) => [...previousState, errorString])
       }
     })
   }
@@ -111,7 +120,7 @@ const Home: FC = () => {
               <div>
                 {data.user.publication?.posts &&
                 data.user.publication.posts?.length > 0 ? (
-                  data.user.publication?.posts?.map((post, key) => (
+                  getLast5Posts().map((post, key) => (
                     <Post
                       cuid={post!.cuid!}
                       isLastPost={
@@ -174,7 +183,7 @@ const Home: FC = () => {
                   githubRepo === ''
                 }
                 label="Back up last 5 posts"
-                onClick={() => triggerPostsBackup()}
+                onClick={() => triggerPostsBackup(getLast5Posts())}
                 type={ButtonType.Secondary}
               />
               <Button
@@ -185,11 +194,27 @@ const Home: FC = () => {
                   githubRepo === ''
                 }
                 label="Back up all posts"
-                onClick={() => triggerPostsBackup()}
+                onClick={() =>
+                  triggerPostsBackup(data?.user?.publication?.posts)
+                }
                 type={ButtonType.Primary}
               />
             </div>
           </section>
+
+          {errors.length > 0 && (
+            <>
+              <Divider />
+
+              <section className="grid gap-4">
+                {errors.map((error: string, key: Key) => {
+                  return (
+                    <Banner key={key} text={error} type={BannerType.Error} />
+                  )
+                })}
+              </section>
+            </>
+          )}
         </div>
       </main>
     </ClientOnly>
