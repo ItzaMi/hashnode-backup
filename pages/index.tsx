@@ -18,6 +18,8 @@ const Home: FC = () => {
   const [githubUsername, setGithubUsername] = useState('')
   const [githubKey, setGithubKey] = useState('')
   const [githubRepo, setGithubRepo] = useState('')
+
+  const [successMessages, setSuccessMessages] = useState<string[]>([])
   const [errors, setErrors] = useState<string[]>([])
 
   const [getUserPosts, { data, loading, error }] = usePostsLazyQuery()
@@ -32,6 +34,8 @@ const Home: FC = () => {
 
   const triggerPostsBackup = (postsData: any) => {
     setErrors([])
+    setSuccessMessages([])
+
     postsData?.forEach(async (post: any) => {
       const octokit = new Octokit({
         auth: githubKey,
@@ -54,6 +58,8 @@ const Home: FC = () => {
             content: Buffer.from(post?.contentMarkdown!).toString('base64'),
           }
         )
+        const messageString = `"${post.title}" uploaded successfully!`
+        setSuccessMessages((previousState) => [...previousState, messageString])
       } catch (error) {
         const errorString = `"${post.title}" failed to upload!`
         setErrors((previousState) => [...previousState, errorString])
@@ -206,7 +212,7 @@ const Home: FC = () => {
             </div>
           </section>
 
-          {errors.length > 0 && (
+          {(errors.length > 0 || successMessages.length > 0) && (
             <>
               <Divider />
 
@@ -214,6 +220,15 @@ const Home: FC = () => {
                 {errors.map((error: string, key: Key) => {
                   return (
                     <Banner key={key} text={error} type={BannerType.Error} />
+                  )
+                })}
+                {successMessages.map((message: string, key: Key) => {
+                  return (
+                    <Banner
+                      key={key}
+                      text={message}
+                      type={BannerType.Success}
+                    />
                   )
                 })}
               </section>
