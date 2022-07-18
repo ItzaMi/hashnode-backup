@@ -1,5 +1,13 @@
 import * as Types from './schemas'
 
+export type PostFragment = {
+  __typename?: 'Post'
+  cuid?: string | null
+  dateAdded?: string | null
+  title?: string | null
+  contentMarkdown?: string | null
+}
+
 export type PostsQueryVariables = Types.Exact<{
   username: Types.Scalars['String']
 }>
@@ -14,6 +22,7 @@ export type PostsQuery = {
       posts?: Array<{
         __typename?: 'Post'
         cuid?: string | null
+        dateAdded?: string | null
         title?: string | null
         contentMarkdown?: string | null
       } | null> | null
@@ -24,5 +33,8 @@ export type PostsQuery = {
 export const namedOperations = {
   Query: {
     Posts: 'Posts',
+  },
+  Fragment: {
+    Post: 'Post',
   },
 }

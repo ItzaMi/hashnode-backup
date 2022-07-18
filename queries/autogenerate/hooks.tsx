@@ -3,20 +3,26 @@ import * as Types from './operations'
 import { gql } from '@apollo/client'
 import * as Apollo from '@apollo/client'
 const defaultOptions = {} as const
-
+export const PostFragmentDoc = gql`
+  fragment Post on Post {
+    cuid
+    dateAdded
+    title
+    contentMarkdown
+  }
+`
 export const PostsDocument = gql`
   query Posts($username: String!) {
     user(username: $username) {
       name
       publication {
         posts {
-          cuid
-          title
-          contentMarkdown
+          ...Post
         }
       }
     }
   }
+  ${PostFragmentDoc}
 `
 
 /**

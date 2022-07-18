@@ -1,11 +1,16 @@
+fragment Post on Post {
+  cuid
+  dateAdded
+  title
+  contentMarkdown
+}
+
 query Posts($username: String!) {
   user(username: $username) {
     name
     publication {
       posts {
-        cuid
-        title
-        contentMarkdown
+        ...Post
       }
     }
   }
